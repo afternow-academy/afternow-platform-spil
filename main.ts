@@ -20,7 +20,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.bonus, function (sprite, otherSp
         b b b b b b b b b b b b b b b b 
         . b b . . . . . . . . . . b b . 
         `)
-    pause(500)
+    pause(1000)
     // "otherSprite" variablen kommer fra "of kind bonus"
     otherSprite.destroy(effects.fountain, 100)
     for (let value of wall) {
