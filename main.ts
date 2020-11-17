@@ -3,7 +3,8 @@ namespace SpriteKind {
     export const gun = SpriteKind.create()
 }
 scene.onOverlapTile(SpriteKind.Player, sprites.castle.rock1, function (sprite, location) {
-    make_tilemap(2)
+    level += 1
+    make_tilemap(level)
     tiles.placeOnRandomTile(ali, myTiles.tile1)
 })
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -105,6 +106,7 @@ function make_tilemap (levels: number) {
             ........................................................
             ........................................................
             `, [myTiles.transparency16,sprites.builtin.oceanDepths0,myTiles.tile1,sprites.dungeon.hazardLava0,sprites.dungeon.hazardLava1,sprites.builtin.coral0,sprites.builtin.coral5,sprites.builtin.forestTiles0,sprites.builtin.forestTiles3,sprites.builtin.forestTiles2,sprites.builtin.forestTiles1,sprites.castle.rock1], TileScale.Sixteen))
+        loaded = 0
         ghost = sprites.create(img`
             ........................
             ........................
@@ -133,6 +135,8 @@ function make_tilemap (levels: number) {
             `, SpriteKind.Enemy)
         tiles.placeOnRandomTile(ghost, sprites.builtin.coral0)
         ghost.x += 14
+    } else {
+        game.over(true, effects.confetti)
     }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
@@ -189,7 +193,9 @@ let loaded = 0
 let ghost: Sprite = null
 let ali: Sprite = null
 let wall: tiles.Location[] = []
-make_tilemap(1)
+let level = 0
+level = 1
+make_tilemap(level)
 // En liste over alle de lokationer af blokke vi gerne vil fjerne efter vi har dræbt vores "ENEMY"
 wall = tiles.getTilesByType(sprites.builtin.forestTiles0)
 ali = sprites.create(img`
