@@ -111,42 +111,7 @@ function make_tilemap (levels: number) {
             ........................................................
             ........................................................
             `, [myTiles.transparency16,sprites.builtin.oceanDepths0,myTiles.tile1,sprites.dungeon.hazardLava0,sprites.dungeon.hazardLava1,sprites.builtin.coral0,sprites.builtin.coral5,sprites.builtin.forestTiles0,sprites.builtin.forestTiles3,sprites.builtin.forestTiles2,sprites.builtin.forestTiles1,sprites.castle.rock1,sprites.castle.saplingOak], TileScale.Sixteen))
-        monster = sprites.create(img`
-            .....fccccf.....
-            ..ccfbb33bbfcc..
-            .cb33bbccbb33bc.
-            .f3cccbccbccc3f.
-            fcbbccbccbccbbcf
-            c3ccb11cc11bcc3c
-            c3ccc11cc11ccc3c
-            .fbbccccccccbbf.
-            ..fbbccccccbbf..
-            ..ccc1f1f1fccc..
-            .c3ff1f1f1fff3c.
-            c3ff1f1f1f1fff3c
-            f3cc1f1f1f1fcc3f
-            fb3cbbfbbfbbc3bf
-            bcbb33b33b33bbca
-            bbffffffffffff3a
-            baacb3ac333aacaa
-            aaccb3acbb3aacac
-            accbb3acbb3aacac
-            bacbb3acb33accaa
-            baccb3acb3aacbba
-            baacb3acb3aacbba
-            baacb3acc33acbba
-            baccb33acc3accba
-            bacbb.3aac3aacba
-            bacb..33ac33acba
-            bacb.33aac.aacba
-            bacb.3aacc.aacba
-            aacb.3acc...acca
-            accb.3ac....aaca
-            acbb...........a
-            acb............a
-            `, SpriteKind.boss)
-        tiles.placeOnTile(monster, tiles.getTileLocation(33, 7))
-        boss_life = 3
+        make_boss(33, 7)
     } else if (levels == 2) {
         tiles.setTilemap(tiles.createTilemap(hex`38001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0908000000000000000000070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0909090908000000000700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a080000000700000000000000000000000000000000000000000000000000000000000000000000000b0000000000000000000000000000000000000007000000000000000000000000000001010101010101010101010101010000010000010101020000000000000000000000000000000001010101010101010100000000000000000100000000000000000000000000000000000000000001010101010101050000000000000601010100000000000000010101010101010101010000000000000000000000000000000004040400000000000000000101010101010101010100000000000000000000000000000000000000000000000000000000000000000000000400000000000000040400000000000000000000000000000000000000000000040400000000000000000000040404000000040400000004040004000000000004030000000000000000000000000004040404000000000404030404000000000000000404030404000404030404040404040400000000000403030400000000000000040404040000000004040404040303030404040404000404030303030404030303040404000000000000000000040403040404040404040404000400000000000404000404040404030403030404040004040404000404040404000000000000000000000000000404000000000000000000000000000000000000000000000004040404000000000000040400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`, img`
             ........................................................
@@ -196,9 +161,49 @@ function make_tilemap (levels: number) {
             `, SpriteKind.Enemy)
         tiles.placeOnRandomTile(ghost, sprites.builtin.coral0)
         ghost.x += 14
+        make_boss(50, 5)
     } else {
         game.over(true, effects.confetti)
     }
+}
+function make_boss (column: number, row: number) {
+    monster = sprites.create(img`
+        .....fccccf.....
+        ..ccfbb33bbfcc..
+        .cb33bbccbb33bc.
+        .f3cccbccbccc3f.
+        fcbbccbccbccbbcf
+        c3ccb11cc11bcc3c
+        c3ccc11cc11ccc3c
+        .fbbccccccccbbf.
+        ..fbbccccccbbf..
+        ..ccc1f1f1fccc..
+        .c3ff1f1f1fff3c.
+        c3ff1f1f1f1fff3c
+        f3cc1f1f1f1fcc3f
+        fb3cbbfbbfbbc3bf
+        bcbb33b33b33bbca
+        bbffffffffffff3a
+        baacb3ac333aacaa
+        aaccb3acbb3aacac
+        accbb3acbb3aacac
+        bacbb3acb33accaa
+        baccb3acb3aacbba
+        baacb3acb3aacbba
+        baacb3acc33acbba
+        baccb33acc3accba
+        bacbb.3aac3aacba
+        bacb..33ac33acba
+        bacb.33aac.aacba
+        bacb.3aacc.aacba
+        aacb.3acc...acca
+        accb.3ac....aaca
+        acbb...........a
+        acb............a
+        `, SpriteKind.boss)
+    tiles.placeOnTile(monster, tiles.getTileLocation(column, row))
+    boss_life = 3
+    boss_pos = row * 16
 }
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.boss, function (sprite, otherSprite) {
     sprite.destroy(effects.fire, 100)
@@ -251,6 +256,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
         game.over(false, effects.melt)
     }
 })
+let boss_pos = 0
 let boss_life = 0
 let monster: Sprite = null
 let chest: Sprite = null
@@ -428,9 +434,9 @@ game.onUpdate(function () {
     if (boss_life <= 0) {
         monster.destroy(effects.warmRadial, 500)
     }
-    if (monster.top <= 64) {
+    if (monster.top <= boss_pos - 64) {
         monster.vy = 50
-    } else if (monster.bottom >= 128) {
+    } else if (monster.bottom >= boss_pos) {
         monster.vy = -50
     }
 })
