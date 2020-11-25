@@ -3,10 +3,6 @@ namespace SpriteKind {
     export const gun = SpriteKind.create()
     export const boss = SpriteKind.create()
 }
-sprites.onOverlap(SpriteKind.boss, SpriteKind.Projectile, function (sprite, otherSprite) {
-    otherSprite.destroy(effects.fire, 100)
-    boss_life += -1
-})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.boss, function (sprite, otherSprite) {
     game.over(false, effects.melt)
 })
@@ -34,7 +30,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
                 . . . . 4 4 2 2 2 2 4 4 . . . . 
                 . . . . . . 4 4 4 4 . . . . . . 
                 . . . . . . . . . . . . . . . . 
-                `, ali, 100, 0)
+                `, ali, 120, 0)
         } else if (direction == 0) {
             projectile = sprites.createProjectileFromSprite(img`
                 . . . . . . . . . . . . . . . . 
@@ -53,7 +49,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
                 . . . . 4 4 2 2 2 2 4 4 . . . . 
                 . . . . . . 4 4 4 4 . . . . . . 
                 . . . . . . . . . . . . . . . . 
-                `, ali, -100, 0)
+                `, ali, -120, 0)
         }
         loaded += -1
     }
@@ -116,22 +112,38 @@ function make_tilemap (levels: number) {
             ........................................................
             `, [myTiles.transparency16,sprites.builtin.oceanDepths0,myTiles.tile1,sprites.dungeon.hazardLava0,sprites.dungeon.hazardLava1,sprites.builtin.coral0,sprites.builtin.coral5,sprites.builtin.forestTiles0,sprites.builtin.forestTiles3,sprites.builtin.forestTiles2,sprites.builtin.forestTiles1,sprites.castle.rock1,sprites.castle.saplingOak], TileScale.Sixteen))
         monster = sprites.create(img`
-            . . . . . f c c c c f . . . . . 
-            . . c c f b b 3 3 b b f c c . . 
-            . c b 3 3 b b c c b b 3 3 b c . 
-            . f 3 c c c b c c b c c c 3 f . 
-            f c b b c c b c c b c c b b c f 
-            c 3 c c b c c c c c c b c c 3 c 
-            c 3 c c c c c c c c c c c c 3 c 
-            . f b b c c c c c c c c b b f . 
-            . . f b b c c c c c c b b f . . 
-            . . c c c f f f f f f c c c . . 
-            . c 3 f f f f f f f f f f 3 c . 
-            c 3 f f f f f f f f f f f f 3 c 
-            f 3 c c f f f f f f f f c c 3 f 
-            f b 3 c b b f b b f b b c 3 b f 
-            . c b b 3 3 b 3 3 b 3 3 b b c . 
-            . . f f f f f f f f f f f f . . 
+            .....fccccf.....
+            ..ccfbb33bbfcc..
+            .cb33bbccbb33bc.
+            .f3cccbccbccc3f.
+            fcbbccbccbccbbcf
+            c3ccb11cc11bcc3c
+            c3ccc11cc11ccc3c
+            .fbbccccccccbbf.
+            ..fbbccccccbbf..
+            ..ccc1f1f1fccc..
+            .c3ff1f1f1fff3c.
+            c3ff1f1f1f1fff3c
+            f3cc1f1f1f1fcc3f
+            fb3cbbfbbfbbc3bf
+            bcbb33b33b33bbca
+            bbffffffffffff3a
+            baacb3ac333aacaa
+            aaccb3acbb3aacac
+            accbb3acbb3aacac
+            bacbb3acb33accaa
+            baccb3acb3aacbba
+            baacb3acb3aacbba
+            baacb3acc33acbba
+            baccb33acc3accba
+            bacbb.3aac3aacba
+            bacb..33ac33acba
+            bacb.33aac.aacba
+            bacb.3aacc.aacba
+            aacb.3acc...acca
+            accb.3ac....aaca
+            acbb...........a
+            acb............a
             `, SpriteKind.boss)
         tiles.placeOnTile(monster, tiles.getTileLocation(33, 7))
         boss_life = 3
@@ -188,6 +200,10 @@ function make_tilemap (levels: number) {
         game.over(true, effects.confetti)
     }
 }
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.boss, function (sprite, otherSprite) {
+    sprite.destroy(effects.fire, 100)
+    boss_life += -1
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     // "sprite" variablen kommer fra "of kind Player"
     // "otherSprite" variablen kommer fra "of kind Enemy"
@@ -235,11 +251,11 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
         game.over(false, effects.melt)
     }
 })
+let boss_life = 0
 let monster: Sprite = null
 let chest: Sprite = null
 let fireball: Sprite = null
 let projectile: Sprite = null
-let boss_life = 0
 let direction = 0
 let loaded = 0
 let ghost: Sprite = null
@@ -409,12 +425,12 @@ game.onUpdate(function () {
     } else {
         ali.say("")
     }
-    if (monster.top <= 48) {
+    if (boss_life <= 0) {
+        monster.destroy(effects.warmRadial, 500)
+    }
+    if (monster.top <= 64) {
         monster.vy = 50
     } else if (monster.bottom >= 128) {
         monster.vy = -50
-    }
-    if (boss_life <= 0) {
-        monster.destroy(effects.warmRadial, 500)
     }
 })
